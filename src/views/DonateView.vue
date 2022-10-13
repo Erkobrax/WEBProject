@@ -1,5 +1,5 @@
 <template>
-  <div>Adopt</div>
+  <div>Donate</div>
 </template>
 
 <script setup lang="ts"></script>
