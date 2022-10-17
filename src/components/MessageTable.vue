@@ -11,7 +11,7 @@
       >
         <q-input
           filled
-          v-model="message.name"
+          v-model="Message.name"
           label="Your name *"
           lazy-rules
           :rules="[
@@ -22,7 +22,7 @@
         <q-input
           filled
           type="email"
-          v-model="message.email"
+          v-model="Message.email"
           label="Your Email *"
           lazy-rules
           :rules="[
@@ -31,7 +31,7 @@
         />
         <q-input
           style="background-position: center"
-          v-model="message.text"
+          v-model="Message.message"
           filled
           label="Your message *"
           type="textarea"
@@ -66,12 +66,12 @@
       <q-card-section style="max-height: 50vh" class="scroll" horizontal>
         <div style="white-space: pre-wrap; width: 100%; padding: 15px">
           <div class="row">
-            <div class="col-6">Your Name: {{ message.name }}</div>
-            <div class="col-6">Your Email: {{ message.email }}</div>
+            <div class="col-6">Your Name: {{ Message.name }}</div>
+            <div class="col-6">Your Email: {{ Message.email }}</div>
           </div>
           <div>Your Messssage:</div>
           <div>
-            {{ print_text(message.text) }}
+            {{ print_text(Message.message) }}
           </div>
         </div>
       </q-card-section>
@@ -85,35 +85,45 @@
 
 <script setup lang="ts">
 import { useMessageStore } from "@/stores/message";
-const message = useMessageStore();
+import axios from "axios";
+const Message = useMessageStore();
 
 const flag = ref(false);
 
-const onSubmit = (e: Event | SubmitEvent) => {
-  const arr = [...(e.target as any)];
-  message.name = arr[0].value;
-  message.email = arr[1].value;
-  message.text = arr[2].value;
-  flag.value = !flag.value;
+const onSubmit = async () => {
+  try {
+    await axios
+      .post("https://47.92.133.39/api/msg", Message.$state)
+      .then((e) => {
+        if (e.status === 200) {
+          flag.value = !flag.value;
+        } else {
+          alert("Fail to send message");
+        }
+      });
+  } catch (e) {
+    console.error(e);
+    alert("Fail to send message");
+  }
 };
 const onReset = () => {
-  message.name = "";
-  message.email = "";
-  message.text = "";
+  Message.name = "";
+  Message.email = "";
+  Message.message = "";
 };
 
 const print_text = (str: string) => {
-  let new_srt: string = "";
+  let new_str: string = "";
   let num = 0;
   for (let i = 0; i < str.length; i++) {
-    new_srt += str.charAt(i);
+    new_str += str.charAt(i);
     num += 1;
     if (num === 86) {
-      new_srt += "\n";
+      new_str += "\n";
       num = 0;
     }
   }
-  return new_srt;
+  return new_str;
 };
 </script>
 
