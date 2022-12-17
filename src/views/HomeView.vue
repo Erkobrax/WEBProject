@@ -2,41 +2,30 @@
   <div>
     <q-page-container>
       <q-page>
-        <q-carousel
-          arrows
-          animated
-          infinite
-          swipeable
-          transition-prev="slide-right"
-          transition-next="slide-left"
-          control-color="secondary"
-          autoplay
-          v-model="slide"
-          height="440px"
-        >
-          <q-carousel-slide
-            class="q-pa-none"
-            :name="1"
-            img-src="../assets/imgs/5.jpeg"
+        <q-parallax :height="450">
+          <template v-slot:media>
+            <video
+              style="width: 100%; height: auto; position: relative; top: -250px"
+              autoplay
+              loop
+              muted
+            >
+              <source type="video/mp4" src="../assets/vedio/video.mp4" />
+            </video>
+            <div
+              class="absolute-full text-subtitle2 flex flex-center"
+              style="background-color: rgba(250, 250, 250, 0.2)"
+            ></div>
+          </template>
+
+          <h1 class="text-primary" style="font-weight: bolder">Adoptanimal</h1>
+          <h3
+            class="text-primary"
+            style="font-weight: normal; line-height: 80px"
           >
-            <div class="absolute-bottom custom-caption">
-              <div class="text-h2">First stop</div>
-              <div class="text-subtitle1">Mountains</div>
-            </div>
-          </q-carousel-slide>
-          <q-carousel-slide :name="2" img-src="../assets/imgs/4.jpeg">
-            <div class="absolute-bottom custom-caption">
-              <div class="text-h2">Second stop</div>
-              <div class="text-subtitle1">Famous City</div>
-            </div>
-          </q-carousel-slide>
-          <q-carousel-slide :name="3" img-src="../assets/imgs/3.jpeg">
-            <div class="absolute-bottom custom-caption">
-              <div class="text-h2">Third stop</div>
-              <div class="text-subtitle1">Famous Bridge</div>
-            </div>
-          </q-carousel-slide>
-        </q-carousel>
+            We are dedicated to bringing homeless pets home.
+          </h3>
+        </q-parallax>
         <div class="row">
           <div class="col">
             <q-card
@@ -47,10 +36,6 @@
                 <q-card-section>
                   <q-icon size="140px" name="pets" color="secondary" />
                   <div class="text-h6">Multiple Choices</div>
-                </q-card-section>
-
-                <q-card-section class="q-pt-none">
-                  We have a variety of pets for people to adopt.
                 </q-card-section>
               </q-card-section>
             </q-card>
@@ -65,11 +50,7 @@
                   <q-icon size="140px" name="thumb_up" color="secondary" />
                   <div class="text-h6">Good Reputation</div>
                 </q-card-section>
-
-                <q-card-section class="q-pt-none">
-                  We have a solid reputation for pet adoption.
-                </q-card-section></q-card-section
-              >
+              </q-card-section>
             </q-card>
           </div>
           <div class="col">
@@ -85,11 +66,7 @@
                   />
                   <div class="text-h6">Non-Profit</div>
                 </q-card-section>
-
-                <q-card-section class="q-pt-none">
-                  We are a good non-profit organization.
-                </q-card-section></q-card-section
-              >
+              </q-card-section>
             </q-card>
           </div>
         </div>
@@ -125,7 +102,6 @@
 
 <script setup lang="ts">
 import MessageTable from "../components/MessageTable.vue";
-const slide = ref(1);
 </script>
 
 <style lang="scss" scoped>

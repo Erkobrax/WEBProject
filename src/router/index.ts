@@ -27,12 +27,20 @@ const router = createRouter({
           component: () => import("../views/AdoptView.vue"),
         },
         {
-          path: "lostanimals",
-          name: "lostanimals",
+          path: "petinfo",
+          name: "petinfo",
           meta: {
-            title: "Lost Animals",
+            title: "petinfo",
           },
-          component: () => import("../views/LostAnimalsView.vue"),
+          component: () => import("../views/PetView.vue"),
+        },
+        {
+          path: "questionandanswer",
+          name: "questionandanswer",
+          meta: {
+            title: "Q&A",
+          },
+          component: () => import("../views/QuestionAndAnswerView.vue"),
         },
         {
           path: "contact",
@@ -43,12 +51,20 @@ const router = createRouter({
           component: () => import("../views/ContactView.vue"),
         },
         {
-          path: "donate",
-          name: "donate",
+          path: "favorite",
+          name: "favorite",
           meta: {
-            title: "Donate",
+            title: "Favorite",
           },
-          component: () => import("../views/DonateView.vue"),
+          component: () => import("../views/FavoriteView.vue"),
+        },
+        {
+          path: "search",
+          name: "search",
+          meta: {
+            title: "Search",
+          },
+          component: () => import("../views/SearchView.vue"),
         },
       ],
     },

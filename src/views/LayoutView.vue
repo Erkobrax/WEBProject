@@ -14,53 +14,33 @@
           <q-tabs container style="height: 55px; line-height: 55px">
             <q-route-tab to="/home" label="Home" />
             <q-route-tab to="/adopt" label="Adopt" />
-            <q-route-tab to="/lostanimals" label="Lost Animals" />
+            <q-route-tab to="/favorite" label="Favorite" />
+            <q-route-tab to="/questionandanswer" label="Q&A" />
             <q-route-tab to="/contact" label="Contact" />
           </q-tabs>
         </div>
         <div class="col-3">
           <q-toolbar>
-            <q-toolbar-title class="row text-center">
-              <q-input
-                dark
-                dense
-                rounded
-                outlined
-                borderless
-                v-model="text"
-                input-class="text-right"
-                class="q-ml-xs col-6"
-              >
-                <template v-slot:append>
-                  <q-icon v-if="text === ''" name="search" />
-                  <q-icon v-else name="clear" @click="text = ''" />
-                </template>
-              </q-input>
-              <q-separator spaced="10px" dark vertical inset />
-              <q-fab
-                color="white"
-                flat
-                round
-                dense
-                icon="menu"
-                padding="5px"
-                direction="right"
-              >
-                <q-fab-action
-                  padding="5px"
-                  color="white"
-                  text-color="primary"
-                  @click="onClick_Login"
-                  icon="fa-solid fa-user"
-                />
-                <q-fab-action
-                  padding="5px"
-                  color="white"
-                  text-color="primary"
-                  @click="onClick_Donate"
-                  icon="fa-solid fa-hand-holding-heart"
-                />
-              </q-fab>
+            <q-toolbar-title class="row">
+              <q-form @submit="onSubmit">
+                <q-input
+                  dark
+                  dense
+                  rounded
+                  outlined
+                  borderless
+                  type="text"
+                  v-model="text"
+                  input-class="text-left"
+                  class="q-ml-xxs"
+                  name="search_value"
+                >
+                  <template v-slot:append>
+                    <q-icon v-if="text === ''" name="search" />
+                    <q-icon v-else name="clear" @click="text = ''" />
+                  </template>
+                </q-input>
+              </q-form>
             </q-toolbar-title>
           </q-toolbar>
         </div>
@@ -69,7 +49,9 @@
 
     <q-page-container>
       <q-page>
-        <router-view></router-view>
+        <Suspense>
+          <router-view></router-view>
+        </Suspense>
       </q-page>
     </q-page-container>
 
@@ -86,9 +68,13 @@
         <div class="col-3">
           <q-toolbar>
             <q-toolbar-title class="text-center FooterCustomStyle">
-              <q-btn flat round dense icon="call" />
-              <q-btn flat round dense icon="shopping_cart" />
-              <q-btn flat round dense icon="email" />
+              <q-btn
+                flat
+                round
+                dense
+                icon="fa-solid fa-heart"
+                @click="onClick_Favorite"
+              />
               <q-btn
                 flat
                 round
@@ -105,14 +91,95 @@
 </template>
 
 <script setup lang="ts">
-const text = ref("");
-const $router = useRouter();
+import axios from "axios";
+import { Notify } from "quasar";
+import { useSearchStore } from "@/stores/search";
 
-const onClick_Donate = () => {
-  $router.push({ path: "/donate" });
+const text = ref("");
+const router = useRouter();
+const Search = useSearchStore();
+
+const onClick_Favorite = () => {
+  router.push({ path: "/favorite" });
 };
-const onClick_Login = () => {
-  $router.push({ path: "/login" });
+
+const doSearch = async (search: string) => {
+  let temp: any;
+  let flag = 0;
+  try {
+    temp = (await axios.get("https://47.92.133.39/api/animal/" + search))
+      .data as string;
+  } catch (e) {
+    flag += 1;
+    try {
+      temp = (await axios.get("https://47.92.133.39/api/animal/name/" + search))
+        .data as string;
+    } catch (e) {
+      flag += 1;
+      try {
+        temp = (
+          await axios.get("https://47.92.133.39/api/animal/breed/" + search)
+        ).data as string;
+      } catch (e) {
+        flag += 1;
+        console.log(e);
+      }
+    }
+  }
+  console.log(temp);
+  console.log(flag);
+  switch (flag) {
+    case 0:
+      Notify.create({
+        position: "top",
+        message: "ID result found!",
+        color: "green",
+      });
+      await router.replace("/");
+      router.push({ path: "/petinfo", query: { id: temp["id"] } });
+      break;
+    case 1:
+      Notify.create({
+        position: "top",
+        message: "Name result found!",
+        color: "green",
+      });
+      if (temp.length == 1) {
+        await router.replace("/");
+        router.push({ path: "/petinfo", query: { id: temp[0]["id"] } });
+      } else {
+        Search.search = temp;
+        router.push("/search");
+      }
+      break;
+    case 2:
+      Notify.create({
+        position: "top",
+        message: "Breed result found!",
+        color: "green",
+      });
+      if (temp.length == 1) {
+        await router.replace("/");
+        router.push({ path: "/petinfo", query: { id: temp[0]["id"] } });
+      } else {
+        Search.search = temp;
+        router.push("/search");
+      }
+      break;
+    case 3:
+      Notify.create({
+        position: "top",
+        message: "Search result no found!",
+        color: "red",
+      });
+  }
+};
+
+const onSubmit = (form: any) => {
+  const search = form.target[0]._value;
+  if (search !== "") {
+    doSearch(search);
+  }
 };
 </script>
 
